@@ -3,8 +3,10 @@ const closeBtn = document.getElementById('close-btn');
 const rules = document.getElementById('rules');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const startOverBtn = document.getElementById('start-over-btn');
 
 let score = 0;
+let gameOver = false;
 
 const brickRowCount = 9;
 const brickColumnCount = 5;
@@ -14,9 +16,9 @@ const ball = {
   x: canvas.width / 2,
   y: canvas.height / 2,
   size: 10,
-  speed: 4,
-  dx: 4,
-  dy: -4
+  speed: 1,
+  dx: 1,
+  dy: -1
 };
 
 // Create paddle props
@@ -25,7 +27,7 @@ const paddle = {
   y: canvas.height - 20,
   w: 80,
   h: 10,
-  speed: 8,
+  speed: 3,
   dx: 0
 };
 
@@ -108,7 +110,7 @@ function moveBall() {
 
   // Wall collision (right/left)
   if (ball.x + ball.size > canvas.width || ball.x - ball.size < 0) {
-    ball.dx *= -1; // ball.dx = ball.dx * -1
+    ball.dx *= -1;
   }
 
   // Wall collision (top/bottom)
@@ -116,14 +118,14 @@ function moveBall() {
     ball.dy *= -1;
   }
 
-  // console.log(ball.x, ball.y);
-
-  // Paddle collision
   if (
     ball.x - ball.size > paddle.x &&
     ball.x + ball.size < paddle.x + paddle.w &&
     ball.y + ball.size > paddle.y
   ) {
+    ball.dy = -ball.speed;
+    ball.speed += 0.1;
+    ball.dx = (ball.dx > 0) ? ball.speed : -ball.speed;
     ball.dy = -ball.speed;
   }
 
@@ -148,8 +150,8 @@ function moveBall() {
 
   // Hit bottom wall - Lose
   if (ball.y + ball.size > canvas.height) {
-    showAllBricks();
-    score = 0;
+    gameOver = true;
+    gameOverDisplay();
   }
 }
 
@@ -182,6 +184,8 @@ function draw() {
 
 // Update canvas drawing and animation
 function update() {
+  if (gameOver) return;
+
   movePaddle();
   moveBall();
 
@@ -221,3 +225,46 @@ document.addEventListener('keyup', keyUp);
 // Rules and close event handlers
 rulesBtn.addEventListener('click', () => rules.classList.add('show'));
 closeBtn.addEventListener('click', () => rules.classList.remove('show'));
+
+function gameOverDisplay() {
+    document.getElementById('game-over').style.display = 'block';
+    startOverBtn.style.display = 'block';
+  }
+  
+
+  startOverBtn.addEventListener('click', function() {
+    // Hide the 'Start Over' button
+    startOverBtn.style.display = 'none';
+  
+    // Hide the 'GAME OVER' message
+    document.getElementById('game-over').style.display = 'none';
+  
+    // Reset the ball properties
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.speed = 1; // Reset to initial speed
+    ball.dx = 1;    // Reset to initial dx
+    ball.dy = -1;   // Reset to initial dy
+  
+    // Reset the paddle properties
+    paddle.x = canvas.width / 2 - 40;
+    paddle.dx = 0;
+  
+    // Make all bricks visible again
+    for (let i = 0; i < brickRowCount; i++) {
+      for (let j = 0; j < brickColumnCount; j++) {
+        bricks[i][j].visible = true;
+      }
+    }
+  
+    // Reset the score
+    score = 0;
+  
+    // Set game over flag to false
+    gameOver = false;
+  
+    // Start the game again
+    update();
+  });
+  
+  

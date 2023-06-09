@@ -68,3 +68,22 @@
   .rules.show {
     transform: translateX(0);
   }
+
+  #start-over-btn {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 100px);
+    transform: translate(-50%, -50%);
+    display: none; /* Initially hidden */
+}
+
+#game-over {
+    font-size: 50px;
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 50px); /* Moved down by 20px */
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  
+  
